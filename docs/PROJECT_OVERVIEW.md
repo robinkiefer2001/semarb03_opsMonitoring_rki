@@ -37,22 +37,26 @@
 **Frontend:**
 | Technologie | Version | Beschreibung |
 |-------------|---------|--------------|
-|             |         |              |
+| FastAPI     | aktuell | Webapp & API |
+| NGINX       | aktuell | Webserver, statische Inhalte |
 
 **Backend:**
 | Technologie | Version | Beschreibung |
 |-------------|---------|--------------|
-|             |         |              |
+| FastAPI     | aktuell | Python Backend |
 
 **Datenbank:**
 | Technologie | Version | Beschreibung |
 |-------------|---------|--------------|
-|             |         |              |
+| Neo4J       | aktuell | Graphdatenbank |
 
 **Infrastruktur:**
 | Technologie | Version | Beschreibung |
 |-------------|---------|--------------|
-|             |         |              |
+| Docker, Docker Compose | aktuell | Containerisierung |
+| Traefik | aktuell | Reverse Proxy, Routing & SSL |
+| GitLab CI/CD | aktuell | Automatisiertes Deployment |
+| Hetzner Cloud | aktuell | Hosting |
 
 ## 7. System-Architektur
 *Platzhalter für ASCII-Diagramm und Datenfluss*

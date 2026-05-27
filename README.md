@@ -1,9 +1,7 @@
 # OpsMonitoring RKI
 
 ![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![CI/CD](https://img.shields.io/badge/ci%2Fcd-gitlab-orange)
+
 
 ## Dokumentation
 | Datei | Beschreibung |
@@ -56,7 +54,8 @@ docker-compose up -d
 |------------|-------------|--------------|
 | Backend    | FastAPI     | Python Web-API |
 | Datenbank  | Neo4J       | Graphdatenbank |
-| Frontend   | Python (tkinter/streamlit) | Webapp |
+| Frontend   | FastAPI | Webapp & API |
+| Webserver  | NGINX   | Statisches Web, Serving |
 | Infrastruktur | Docker, Docker Compose | Containerisierung |
 | Reverse Proxy | Traefik | Routing & SSL Management |
 | CI/CD      | GitLab CI/CD | Automatisiertes Deployment |
