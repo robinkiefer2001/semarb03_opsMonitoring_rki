@@ -1,0 +1,3 @@
+# Python Dependencies
+fastapi
+neo4j

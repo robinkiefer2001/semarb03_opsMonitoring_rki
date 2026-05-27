@@ -1,0 +1,12 @@
+# Gitignore für Python/Docker
+__pycache__/
+*.pyc
+.env
+*.db
+*.sqlite3
+dist/
+build/
+*.egg-info/
+.DS_Store
+*.log
+docker-compose.override.yml
