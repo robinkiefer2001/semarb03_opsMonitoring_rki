@@ -6,8 +6,8 @@
 ## Dokumentation
 | Datei | Beschreibung |
 |-------|-------------|
-| [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) | Projektübersicht & Ziele |
-| [docs/projectworkbook.md](docs/projectworkbook.md) | Sprint-Dokumentation |
+| [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) | Projektübersicht, Ziele, User Stories, Struktur |
+| [docs/projectworkbook.md](docs/projectworkbook.md) | Sprint-Dokumentation, User Stories & Tasks (hierarchisch) |
 | [docs/risikotabelle.md](docs/risikotabelle.md) | Risikotabelle |
 
 ## Quick Start
@@ -68,6 +68,11 @@ docker-compose up -d
 | Sprint 1 | Infrastruktur & IaC | Geplant |
 | Sprint 2 | Backend & Webapp | Geplant |
 | Sprint 3 | API-Anbindungen & Testing | Geplant |
+
+## Projektmanagement
+Das Projektmanagement erfolgt nach dem Muster:
+- Sprint (Phase) → User Story → Task
+Siehe [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) und [docs/projectworkbook.md](docs/projectworkbook.md) für Details zur Hierarchie und Zuordnung.
 
 ## Features
 - Monitoring-Portal für Security Advisories

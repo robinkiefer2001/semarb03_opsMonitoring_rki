@@ -6,13 +6,17 @@
 |      |              |           |
 
 ## 2. Projektzusammenfassung
+
 **Kernfunktionalitäten:**
-- 
-- 
+- Monitoring-Portal für Security Advisories
+- CVE-Tracking (mehrere Hersteller)
+- Containerisierte Microservices
+- Webzugriff & Datenvisualisierung
+- Automatisiertes Deployment (IaC, CI/CD)
 
 **Projektumfang:**
-- 
-- 
+- Sprints mit klarer Hierarchie: Sprint (Phase) → User Story → Task
+- Arbeitspakete werden in OpenProject nach diesem Muster strukturiert
 
 ## 3. Stakeholder und Rollen
 | Rolle | Verantwortlichkeiten | Person |
@@ -20,11 +24,11 @@
 |       |                     |        |
 
 ## 4. Funktionale Anforderungen
-- FR-01: 
-- FR-02: 
-- FR-03: 
-- FR-04: 
-- FR-05: 
+- FR-01: Als Projektleiter möchte ich ein zentrales GitLab-Repo anlegen, damit alle Projektdateien versioniert sind
+- FR-02: Als Entwickler möchte ich die Projektstruktur und Doku anlegen, damit die Entwicklung strukturiert starten kann
+- FR-03: Als Projektleiter möchte ich ein Hetzner-Projekt und Jira-Board anlegen, damit Infrastruktur und Aufgaben gemanagt werden
+- FR-04: Als Entwickler möchte ich die Architektur und das DB-Schema planen, damit die technische Basis klar ist
+- FR-05: Als Entwickler möchte ich eine CI/CD Pipeline konzipieren, damit automatisiertes Deployment möglich ist
 
 ## 5. Nicht-funktionale Anforderungen
 - NFR-01: 
