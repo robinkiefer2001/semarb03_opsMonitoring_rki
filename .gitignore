@@ -1,6 +1,9 @@
 # Gitignore für Python/Docker
 __pycache__/
 *.pyc
+.venv/
+venv/
+node_modules/
 .env
 *.db
 *.sqlite3

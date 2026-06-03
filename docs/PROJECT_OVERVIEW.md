@@ -24,7 +24,7 @@
 |       |                     |        |
 
 ## 4. Funktionale Anforderungen
-- FR-01: Als Projektleiter möchte ich ein zentrales GitLab-Repo anlegen, damit alle Projektdateien versioniert sind
+- FR-01: Als Projektleiter möchte ich ein zentrales GitHub-Repo anlegen, damit alle Projektdateien versioniert sind
 - FR-02: Als Entwickler möchte ich die Projektstruktur und Doku anlegen, damit die Entwicklung strukturiert starten kann
 - FR-03: Als Projektleiter möchte ich ein Hetzner-Projekt und Jira-Board anlegen, damit Infrastruktur und Aufgaben gemanagt werden
 - FR-04: Als Entwickler möchte ich die Architektur und das DB-Schema planen, damit die technische Basis klar ist
@@ -59,7 +59,7 @@
 |-------------|---------|--------------|
 | Docker, Docker Compose | aktuell | Containerisierung |
 | Traefik | aktuell | Reverse Proxy, Routing & SSL |
-| GitLab CI/CD | aktuell | Automatisiertes Deployment |
+| GitHub Actions | aktuell | Automatisiertes Deployment |
 | Hetzner Cloud | aktuell | Hosting |
 
 ## 7. System-Architektur

@@ -44,7 +44,9 @@ docker-compose up -d
 │   ├── PROJECT_OVERVIEW.md
 │   ├── projectworkbook.md
 │   └── risikotabelle.md
-├── .gitlab-ci.yml
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── .gitignore
 └── README.md
 ```
@@ -58,7 +60,7 @@ docker-compose up -d
 | Webserver  | NGINX   | Statisches Web, Serving |
 | Infrastruktur | Docker, Docker Compose | Containerisierung |
 | Reverse Proxy | Traefik | Routing & SSL Management |
-| CI/CD      | GitLab CI/CD | Automatisiertes Deployment |
+| CI/CD      | GitHub Actions | Automatisiertes Deployment |
 | Cloud      | Hetzner Cloud | Hosting |
 
 ## Projekt-Status
@@ -100,6 +102,6 @@ Siehe [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) und [docs/projectwork
 4. Infrastruktur via Docker Compose testen
 
 ## Deployment
-- CI/CD Pipeline via GitLab
+- CI/CD Pipeline via GitHub Actions
 - Automatisiertes Deployment auf Hetzner Cloud
-- Secrets & Umgebungsvariablen via GitLab CI/CD
+- Secrets & Umgebungsvariablen via GitHub Secrets
