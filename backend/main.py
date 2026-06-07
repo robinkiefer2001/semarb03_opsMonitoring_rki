@@ -1,2 +1,0 @@
-# FastAPI Hauptanwendung (leer)
-

@@ -1,0 +1,53 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Service Start (Root .venv)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "cwd": "${workspaceFolder}/${input:serviceCwd}",
+      "args": [
+        "${input:asgiTarget}",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "${input:servicePort}",
+        "--reload"
+      ],
+      "console": "integratedTerminal",
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "serviceCwd",
+      "type": "pickString",
+      "description": "Welchen Service debuggen?",
+      "options": [
+        "services/data-collector",
+        "services/api-service"
+      ],
+      "default": "services/data-collector"
+    },
+    {
+      "id": "servicePort",
+      "type": "pickString",
+      "description": "Port fuer Uvicorn",
+      "options": [
+        "8001",
+        "8002"
+      ],
+      "default": "8001"
+    },
+    {
+      "id": "asgiTarget",
+      "type": "pickString",
+      "description": "ASGI Target",
+      "options": [
+        "app.main:app"
+      ],
+      "default": "app.main:app"
+    }
+  ]
+}

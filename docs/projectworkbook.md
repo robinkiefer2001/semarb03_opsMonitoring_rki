@@ -58,7 +58,9 @@
 ## Sprint 1 – Microservices-Architektur & Repo-Struktur (2 Wochen)
 
 **Sprint-Ziel:**
-Finale Monorepo-Struktur etablieren, alle Microservice-Verzeichnisse mit korrektem Layer-Aufbau anlegen, shared Models definieren und jeden Service als eigenständigen Docker-Container vorbereiten.
+Finale Monorepo-Struktur etablieren und den data-collector auf eine zentrale Architektur- und Mapping-Definition ausrichten, sodass Feldzuordnung, Aliases, Runtime-Regeln und Normalisierung zentral gepflegt werden.
+
+**Status:** Teilweise abgeschlossen (Backend/Collector/API-Grundlagen umgesetzt, Infra-Anteile offen)
 
 ---
 
@@ -74,22 +76,36 @@ semarb03_opsMonitoring_rki/
 │   │   │   ├── __init__.py
 │   │   │   ├── main.py              ← Entrypoint, Scheduler-Start
 │   │   │   ├── config.py            ← Env-Vars via pydantic-settings
-│   │   │   ├── models/
-│   │   │   │   ├── raw/             ← Schicht 1: rohe API-Antworten (NVD, BSI, ...)
-│   │   │   │   │   ├── nvd_raw.py
-│   │   │   │   │   └── bsi_raw.py
-│   │   │   │   ├── domain/          ← Schicht 2: internes normalisiertes Model
-│   │   │   │   │   └── cve.py
-│   │   │   │   └── db/              ← Schicht 3: Neo4J Node/Relation-Struktur
-│   │   │   │       └── cve_node.py
-│   │   │   ├── mappers/             ← Konvertierung: raw → domain → db_node
-│   │   │   │   └── cve_mapper.py
 │   │   │   ├── collectors/          ← ein Adapter pro externer Datenquelle
 │   │   │   │   ├── base.py          ← Abstract Base Class collect()
 │   │   │   │   ├── nvd.py
 │   │   │   │   └── bsi.py
-│   │   │   ├── services/            ← Businesslogik (orchestriert collect→map→save)
-│   │   │   │   └── cve_service.py
+│   │   │   ├── architecture/        ← zentrale Architektur- und Mapping-Definition
+│   │   │   │   └── architecture_map.py
+│   │   │   ├── schemas/
+│   │   │   │   └── internal/        ← internes Zielschema fuer normalisierte Daten
+│   │   │   │       ├── asset.py
+│   │   │   │       ├── service.py
+│   │   │   │       ├── update.py
+│   │   │   │       ├── advisory.py
+│   │   │   │       ├── vendor.py
+│   │   │   │       ├── service_change.py
+│   │   │   │       └── cve.py
+│   │   │   ├── mapping/             ← Ausfuehrungslogik fuer zentrale Feldzuordnung
+│   │   │   │   ├── field_maps.py
+│   │   │   │   ├── asset_mapping.py
+│   │   │   │   ├── service_mapping.py
+│   │   │   │   ├── update_mapping.py
+│   │   │   │   ├── advisory_mapping.py
+│   │   │   │   └── cve_mapping.py
+│   │   │   ├── normalizers/         ← Wertvereinheitlichung nach dem Mapping
+│   │   │   │   ├── asset_normalizer.py
+│   │   │   │   ├── service_normalizer.py
+│   │   │   │   ├── update_normalizer.py
+│   │   │   │   ├── advisory_normalizer.py
+│   │   │   │   └── cve_normalizer.py
+│   │   │   ├── services/            ← Orchestrierung collect→map→normalize→save
+│   │   │   │   └── ingest_service.py
 │   │   │   ├── db/
 │   │   │   │   └── neo4j_client.py  ← Verbindungs-Client zu Neo4J-Container
 │   │   │   └── utils/               ← reine Hilfsfunktionen
@@ -99,24 +115,13 @@ semarb03_opsMonitoring_rki/
 │   │   ├── Dockerfile
 │   │   └── requirements.txt
 │   │
-│   ├── api-service/                 ← Python/FastAPI | externer REST-API-Endpunkt
+│   ├── api-service/                 ← Python/FastAPI | spaeterer ingest/read Service, aktuell Minimalgeruest
 │   │   ├── app/
 │   │   │   ├── __init__.py
 │   │   │   ├── main.py
 │   │   │   ├── config.py
-│   │   │   ├── models/
-│   │   │   │   ├── domain/          ← Schicht 2: via shared/ importiert
-│   │   │   │   └── response/        ← Schicht 4: öffentliche API-Response-DTOs
-│   │   │   │       └── cve_response.py
-│   │   │   ├── mappers/             ← domain → response
-│   │   │   │   └── cve_mapper.py
-│   │   │   ├── routers/             ← HTTP-Layer (nur Request/Response, keine Logik)
-│   │   │   │   ├── cve.py           ← GET /cves, GET /cves/{id}
-│   │   │   │   └── health.py        ← GET /health
-│   │   │   ├── services/            ← Businesslogik, DB-Abfragen
-│   │   │   │   └── cve_service.py
 │   │   │   ├── middleware/
-│   │   │   │   └── auth.py          ← API-Key / JWT-Prüfung
+│   │   │   │   └── auth.py
 │   │   │   ├── db/
 │   │   │   │   └── neo4j_client.py
 │   │   │   └── utils/
@@ -134,11 +139,6 @@ semarb03_opsMonitoring_rki/
 │       ├── Dockerfile
 │       └── package.json
 │
-├── shared/                          ← geteilte Models zwischen Services
-│   └── models/
-│       ├── __init__.py
-│       └── cve.py                   ← CveDomain (einmal definiert, mehrfach genutzt)
-│
 ├── infrastructure/
 │   ├── docker-compose.yml           ← lokale Entwicklung (alle 5 Container)
 │   ├── docker-compose.prod.yml      ← Produktion
@@ -152,6 +152,9 @@ semarb03_opsMonitoring_rki/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
+├── .vscode/
+│   ├── launch.json
+│   └── settings.json
 ├── .env.example
 ├── .gitignore
 ├── docs/
@@ -161,6 +164,14 @@ semarb03_opsMonitoring_rki/
 │   └── api-spec.yaml               ← OpenAPI Spec (generiert aus FastAPI)
 └── README.md
 ```
+
+### Python-Umgebungen und Debugging (Windows)
+
+- Root-venv: `.venv` fuer Skripte, Debugging und beide Services.
+- Service-venvs: nicht mehr genutzt (vereinheitlicht auf Root-venv).
+- Debug-Dateien in VS Code:
+        - `.vscode/settings.json` setzt den Standard-Interpreter und Testkonfiguration.
+        - `.vscode/launch.json` nutzt ein konsolidiertes FastAPI-Startprofil mit Root-venv.
 
 ### Container-Übersicht (docker-compose)
 
@@ -178,13 +189,13 @@ semarb03_opsMonitoring_rki/
 Externe APIs (NVD, BSI, ...)
         │
         ▼
-[ops-data-collector]  ←  sammelt, mappt raw→domain→db_node, schreibt
+[ops-data-collector]  ←  sammelt, mappt ueber Architektur-Map, normalisiert und schreibt
         │
         ▼
    [ops-neo4j]        ←  einzige Source of Truth
         │
         ▼
- [ops-api-service]    ←  liest, mappt domain→response, liefert REST
+[ops-api-service]    ←  spaeterer ingest/read Service, aktuell Minimalgeruest
         │
         ▼
    [ops-traefik]      ←  Routing /api/* → api-service, /* → webapp
@@ -207,8 +218,8 @@ Externe APIs (NVD, BSI, ...)
 | GitHub Advisories | Package/Ecosystem Advisories | https://docs.github.com/en/rest/security-advisories | https://api.github.com/advisories | Token empfohlen |
 
 **Hinweis für das eigene API-Service (FastAPI):**
-- Swagger UI: `/docs`
-- ReDoc: `/redoc`
+- Swagger UI: `/doc`
+- ReDoc: deaktiviert im MVP
 - OpenAPI JSON: `/openapi.json`
 
 ---
@@ -217,48 +228,49 @@ Externe APIs (NVD, BSI, ...)
 | Epic | Story-ID | Rolle | Als [Rolle] möchte ich... | ...damit... | Akzeptanzkriterien | Story Points |
 |------|----------|-------|--------------------------|-------------|-------------------|--------------|
 | Architektur | US-1.1 | Entwickler | Als Entwickler möchte ich die Monorepo-Struktur final anlegen | damit alle Services eine klare Heimat haben | Alle Verzeichnisse, `__init__.py`-Dateien und Dockerfiles vorhanden | 3 |
-| Architektur | US-1.2 | Entwickler | Als Entwickler möchte ich shared/models mit dem CveDomain-Model anlegen | damit beide Services dasselbe Model nutzen | `shared/models/cve.py` existiert, wird in beiden Services importiert | 2 |
-| data-collector | US-1.3 | Entwickler | Als Entwickler möchte ich die Layer-Struktur im data-collector aufbauen | damit raw→domain→db_node sauber getrennt ist | models/, mappers/, collectors/, services/, utils/ vorhanden und strukturiert | 3 |
-| api-service | US-1.4 | Entwickler | Als Entwickler möchte ich die Layer-Struktur im api-service aufbauen | damit Routing, Businesslogik und DB sauber getrennt sind | routers/, services/, models/response/, middleware/ vorhanden | 3 |
+| Architektur | US-1.2 | Entwickler | Als Entwickler möchte ich eine zentrale Architektur-Map fuer den data-collector anlegen | damit Feldzuordnung, Aliases und Runtime-Regeln zentral gepflegt werden | `architecture/architecture_map.py` existiert und beschreibt die Zielobjekte | 3 |
+| data-collector | US-1.3 | Entwickler | Als Entwickler möchte ich die Collector-Struktur aufbauen | damit Collector, internes Schema, Mapping und Normalisierung sauber getrennt sind | collectors/, architecture/, schemas/, mapping/, normalizers/, services/ vorhanden | 3 |
+| api-service | US-1.4 | Entwickler | Als Entwickler möchte ich den api-service nur als Minimalgeruest vorbereiten | damit spaetere ingest/read Anforderungen ohne Fehlpraegung umgesetzt werden koennen | main.py, config.py, db/, middleware/, utils/ vorhanden | 1 |
 | Infra | US-1.5 | DevOps | Als DevOps möchte ich docker-compose mit allen 5 Containern konfigurieren | damit das Gesamtsystem lokal startbar ist | `docker-compose up` startet alle Container fehlerfrei | 3 |
 | Infra | US-1.6 | Entwickler | Als Entwickler möchte ich config.py mit pydantic-settings in jedem Service | damit alle Env-Vars zentral und typsicher geladen werden | `.env.example` vorhanden, config.py liest alle Vars | 2 |
 
 **Tasks:**
 | Parent Story | ID | Beschreibung | Verantwortlich | Geschätzter Aufwand (h) | Status |
 |--------------|----|--------------|----------------|------------------------|--------|
-| US-1.1 | T1.1 | Alte `backend/` und `services/` Struktur in neue Monorepo-Struktur überführen | Robin Kiefer | 2 | Offen |
-| US-1.1 | T1.2 | Dockerfiles für data-collector und api-service anlegen | Robin Kiefer | 1 | Offen |
-| US-1.1 | T1.3 | Dockerfile für webapp (Node.js) anlegen | Robin Kiefer | 1 | Offen |
-| US-1.2 | T1.4 | `shared/models/cve.py` mit CveDomain Pydantic-Model anlegen | Robin Kiefer | 1 | Offen |
-| US-1.2 | T1.5 | shared/ als Python-Package einrichten (`__init__.py`, PYTHONPATH) | Robin Kiefer | 1 | Offen |
-| US-1.3 | T1.6 | models/raw/, models/domain/, models/db/ im data-collector anlegen | Robin Kiefer | 2 | Offen |
-| US-1.3 | T1.7 | collectors/base.py mit Abstract Base Class anlegen | Robin Kiefer | 1 | Offen |
-| US-1.3 | T1.8 | mappers/cve_mapper.py Skeleton anlegen | Robin Kiefer | 1 | Offen |
-| US-1.4 | T1.9 | routers/ mit health.py und cve.py Skeleton anlegen | Robin Kiefer | 1 | Offen |
-| US-1.4 | T1.10 | models/response/cve_response.py anlegen | Robin Kiefer | 1 | Offen |
-| US-1.4 | T1.11 | middleware/auth.py Skeleton anlegen | Robin Kiefer | 1 | Offen |
+| US-1.1 | T1.1 | Alte `backend/` und `services/` Struktur in neue Monorepo-Struktur überführen | Robin Kiefer | 2 | Abgeschlossen |
+| US-1.1 | T1.2 | Dockerfiles für data-collector und api-service anlegen | Robin Kiefer | 1 | In Arbeit |
+| US-1.1 | T1.3 | Dockerfile für webapp (Node.js) anlegen | Robin Kiefer | 1 | In Arbeit |
+| US-1.2 | T1.4 | `architecture/architecture_map.py` mit Objektarten, PropertyMap und Runtime-Regeln anlegen | Robin Kiefer | 2 | Abgeschlossen |
+| US-1.2 | T1.5 | zentrale Felddefinitionen und Aliases in `mapping/field_maps.py` anlegen | Robin Kiefer | 1 | Abgeschlossen |
+| US-1.3 | T1.6 | `schemas/internal/` fuer Asset, Service, Update, Advisory, Vendor, ServiceChange und CVE anlegen | Robin Kiefer | 2 | Abgeschlossen |
+| US-1.3 | T1.7 | collectors/base.py mit Abstract Base Class anlegen | Robin Kiefer | 1 | Abgeschlossen |
+| US-1.3 | T1.8 | Mapping- und Normalizer-Skeletons anlegen | Robin Kiefer | 2 | Abgeschlossen |
+| US-1.4 | T1.9 | api-service auf Minimalgeruest reduzieren | Robin Kiefer | 1 | Abgeschlossen |
+| US-1.4 | T1.10 | middleware/auth.py Skeleton anlegen | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.5 | T1.12 | docker-compose.yml mit allen 5 Services konfigurieren | Robin Kiefer | 3 | Offen |
 | US-1.5 | T1.13 | Traefik-Routing-Regeln für api-service und webapp definieren | Robin Kiefer | 2 | Offen |
 | US-1.5 | T1.14 | Neo4J-Container mit Init-Skript und Constraints konfigurieren | Robin Kiefer | 1 | Offen |
-| US-1.6 | T1.15 | config.py mit pydantic-settings in data-collector anlegen | Robin Kiefer | 1 | Offen |
-| US-1.6 | T1.16 | config.py mit pydantic-settings in api-service anlegen | Robin Kiefer | 1 | Offen |
+| US-1.6 | T1.15 | config.py mit pydantic-settings in data-collector anlegen | Robin Kiefer | 1 | Abgeschlossen |
+| US-1.6 | T1.16 | config.py mit pydantic-settings in api-service anlegen | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.6 | T1.17 | .env.example mit allen benötigten Variablen befüllen | Robin Kiefer | 1 | Offen |
+| US-1.6 | T1.18 | Root-venv und Service-venvs anlegen und dokumentieren | Robin Kiefer | 1 | Abgeschlossen (Root-venv-Only) |
+| US-1.6 | T1.19 | VS Code Debug-Dateien `.vscode/launch.json` und `.vscode/settings.json` anlegen | Robin Kiefer | 1 | Abgeschlossen |
 
 **Definition of Done (DoD):**
-- [ ] Alle Service-Verzeichnisse mit korrektem Layer-Aufbau vorhanden
-- [ ] `shared/models/cve.py` existiert und wird von beiden Services importiert
+- [x] Alle Service-Verzeichnisse mit korrektem Layer-Aufbau vorhanden
+- [x] `architecture/architecture_map.py` definiert die zentrale Collector-Logik
 - [ ] `docker-compose up` startet alle 5 Container fehlerfrei
 - [ ] Traefik routet `/api/*` zu api-service, `/*` zu webapp
 - [ ] `.env.example` dokumentiert alle Umgebungsvariablen
-- [ ] Jeder Service hat ein eigenes Dockerfile und requirements.txt
+- [ ] Jeder Service hat ein eigenes Dockerfile und requirements.txt (Dockerfile-Inhalt noch offen)
 
 **Deliverables:**
 | Nr. | Deliverable | Story | Beschreibung | Erfolgskriterium |
 |-----|-------------|-------|--------------|-----------------|
 | D1.1 | Monorepo-Struktur | US-1.1 | Finale Verzeichnisstruktur | Struktur entspricht Referenz-Architektur |
-| D1.2 | Shared Models | US-1.2 | `shared/models/cve.py` | Wird fehlerfrei importiert |
-| D1.3 | data-collector Skeleton | US-1.3 | Layer-Struktur vollständig | Alle Module vorhanden |
-| D1.4 | api-service Skeleton | US-1.4 | Layer-Struktur vollständig | Health-Endpunkt erreichbar |
+| D1.2 | Architektur-Map | US-1.2 | Zentrale Objekt- und Felddefinition | Regeln sind an einer Stelle gepflegt |
+| D1.3 | data-collector Skeleton | US-1.3 | Collector-Struktur vollständig | Collectors, Schemas, Mapping und Normalizer vorhanden |
+| D1.4 | api-service Skeleton | US-1.4 | neutrales Basisgeruest | Keine fachlich falsche Vorpraegung mehr |
 | D1.5 | docker-compose Setup | US-1.5 | Alle 5 Container | `docker-compose up` läuft |
 | D1.6 | Config & Env | US-1.6 | pydantic-settings, .env.example | Alle Vars dokumentiert |
 
@@ -271,6 +283,8 @@ Externe APIs (NVD, BSI, ...)
 **Sprint-Ziel:**
 Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/publizieren.
 
+**Status:** In Arbeit (Webapp/Drilldown/API-Doku umgesetzt, Containerisierung noch offen)
+
 **Epics und User Stories:**
 | Epic | Story-ID | Rolle | Als [Rolle] möchte ich... | ...damit... | Akzeptanzkriterien | Story Points |
 |------|----------|-------|--------------------------|-------------|-------------------|--------------|
@@ -281,18 +295,18 @@ Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/p
 **Tasks:**
 | Parent Story | ID | Beschreibung | Verantwortlich | Geschätzter Aufwand (h) | Status |
 |--------------|----|--------------|----------------|------------------------|--------|
-| US-2.1 | T2.1 | Webapp-UI-Design entwerfen | Robin Kiefer | 2 | Offen |
-| US-2.1 | T2.2 | Mockup klickbar machen | Robin Kiefer | 1 | Offen |
+| US-2.1 | T2.1 | Webapp-UI-Design entwerfen | Robin Kiefer | 2 | Abgeschlossen |
+| US-2.1 | T2.2 | Mockup klickbar machen | Robin Kiefer | 1 | Abgeschlossen |
 | US-2.2 | T2.3 | Dockerfile für Backend schreiben | Robin Kiefer | 2 | Offen |
 | US-2.2 | T2.4 | Docker Compose für Gesamtsystem anlegen | Robin Kiefer | 2 | Offen |
-| US-2.3 | T2.5 | OpenAPI/Swagger-Dokumentation erstellen | Robin Kiefer | 2 | Offen |
-| US-2.3 | T2.6 | API-Doku online publizieren | Robin Kiefer | 1 | Offen |
+| US-2.3 | T2.5 | OpenAPI/Swagger-Dokumentation erstellen | Robin Kiefer | 2 | Abgeschlossen |
+| US-2.3 | T2.6 | API-Doku online publizieren | Robin Kiefer | 1 | In Arbeit |
 
 **Definition of Done (DoD):**
-- [ ] Webapp-Design und klickbares Mockup vorhanden
+- [x] Webapp-Design und klickbares Mockup vorhanden
 - [ ] Backend als Docker-Container lauffähig
 - [ ] Docker Compose für Gesamtsystem vorhanden
-- [ ] API-Dokumentation online verfügbar
+- [ ] API-Dokumentation online verfügbar (lokal vorhanden via /doc)
 
 **Deliverables:**
 | Nr. | Deliverable | Story | Beschreibung | Erfolgskriterium |
@@ -303,6 +317,21 @@ Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/p
 | D2.4 | API-Doku | US-2.3 | OpenAPI/Swagger | Online abrufbar |
 
 **Story Points Total:** 6
+
+### Nachführung Stand 2026-06-07
+
+**Umgesetzt seit letzter Aktualisierung:**
+- Data-Collector vollständig als Pipeline (collect → map → normalize) implementiert.
+- Quellen integriert: BSI, NVD, CISA KEV, GitHub Advisories, Cisco, Microsoft, Entra-Change-Signal.
+- API-Service erweitert um Device Inventory, Impact-Bewertung und CVE-Intel-Endpunkte.
+- Frontend als interaktives Cockpit mit Drilldown, Filtern, Device-Fenster und CVE-Intel-Fenster umgesetzt.
+- Swagger lokal für beide Services unter `/doc` nutzbar.
+
+**Offene Prioritäten (Backlog nahe Umsetzung):**
+- Dockerfiles und Compose produktionsreif ausarbeiten.
+- Traefik-Routing finalisieren.
+- Neo4j Persistenz statt In-Memory Device Store integrieren.
+- Versionsgenaues Matching (SemVer/CPE) für präzisere Betroffenheit umsetzen.
 
 ---
 
