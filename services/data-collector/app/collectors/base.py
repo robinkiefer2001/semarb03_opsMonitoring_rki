@@ -8,6 +8,6 @@ class BaseCollector(ABC):
 	source: str
 
 	@abstractmethod
-	def collect(self, limit: int = 10) -> list[dict[str, Any]]:
+	def collect(self, limit: int = 100) -> list[dict[str, Any]]:
 		raise NotImplementedError
 

@@ -6,6 +6,7 @@ from app.collectors.cisco import CiscoCollector
 from app.collectors.github import GitHubAdvisoryCollector
 from app.collectors.microsoft import MicrosoftCollector
 from app.collectors.nvd import NVDCollector
+from app.db.neo4j_client import neo4j_client
 from app.mapping.advisory_mapping import map_advisory
 from app.mapping.cve_mapping import map_cve
 from app.normalizers.advisory_normalizer import normalize_advisory
@@ -37,7 +38,8 @@ def collect_and_normalize(limit_per_source: int = 10) -> dict:
 						vendor_name=advisory.vendor.name,
 					)
 				)
-				cves.append(cve)
+				if cve.cve_id:
+					cves.append(cve)
 
 	unique_cves = {c.cve_id: c for c in cves}.values()
 	snapshot = {
@@ -53,6 +55,13 @@ def collect_and_normalize(limit_per_source: int = 10) -> dict:
 
 	global _LAST_SNAPSHOT
 	_LAST_SNAPSHOT = snapshot
+
+	try:
+		neo4j_client.save_snapshot(snapshot)
+	except Exception:
+		# Do not fail ingestion on DB write issues; API can still serve fresh snapshot.
+		pass
+
 	return snapshot
 
 

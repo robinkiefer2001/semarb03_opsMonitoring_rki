@@ -1,0 +1,24 @@
+http:
+	routers:
+		webapp:
+			rule: "PathPrefix(`/`)"
+			service: webapp
+			entryPoints:
+				- web
+
+		apis:
+			rule: "PathPrefix(`/api`) || PathPrefix(`/doc`)"
+			service: api-service
+			entryPoints:
+				- web
+
+	services:
+		webapp:
+			loadBalancer:
+				servers:
+					- url: "http://webapp:80"
+
+		api-service:
+			loadBalancer:
+				servers:
+					- url: "http://api-service:8002"

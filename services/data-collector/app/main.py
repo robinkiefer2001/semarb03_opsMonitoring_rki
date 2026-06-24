@@ -17,7 +17,7 @@ def health() -> dict[str, str]:
 	return {"status": "ok", "service": "data-collector"}
 
 
-@app.post("/collect/run")
+@app.api_route("/collect/run", methods=["GET", "POST"])
 def run_collection(limit_per_source: int = Query(default=10, ge=1, le=50)) -> dict:
 	return collect_and_normalize(limit_per_source=limit_per_source)
 

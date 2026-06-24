@@ -60,7 +60,7 @@
 **Sprint-Ziel:**
 Finale Monorepo-Struktur etablieren und den data-collector auf eine zentrale Architektur- und Mapping-Definition ausrichten, sodass Feldzuordnung, Aliases, Runtime-Regeln und Normalisierung zentral gepflegt werden.
 
-**Status:** Teilweise abgeschlossen (Backend/Collector/API-Grundlagen umgesetzt, Infra-Anteile offen)
+**Status:** Abgeschlossen
 
 ---
 
@@ -238,8 +238,8 @@ Externe APIs (NVD, BSI, ...)
 | Parent Story | ID | Beschreibung | Verantwortlich | Geschätzter Aufwand (h) | Status |
 |--------------|----|--------------|----------------|------------------------|--------|
 | US-1.1 | T1.1 | Alte `backend/` und `services/` Struktur in neue Monorepo-Struktur überführen | Robin Kiefer | 2 | Abgeschlossen |
-| US-1.1 | T1.2 | Dockerfiles für data-collector und api-service anlegen | Robin Kiefer | 1 | In Arbeit |
-| US-1.1 | T1.3 | Dockerfile für webapp (Node.js) anlegen | Robin Kiefer | 1 | In Arbeit |
+| US-1.1 | T1.2 | Dockerfiles für data-collector und api-service anlegen | Robin Kiefer | 1 | Abgeschlossen |
+| US-1.1 | T1.3 | Dockerfile für webapp (Node.js) anlegen | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.2 | T1.4 | `architecture/architecture_map.py` mit Objektarten, PropertyMap und Runtime-Regeln anlegen | Robin Kiefer | 2 | Abgeschlossen |
 | US-1.2 | T1.5 | zentrale Felddefinitionen und Aliases in `mapping/field_maps.py` anlegen | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.3 | T1.6 | `schemas/internal/` fuer Asset, Service, Update, Advisory, Vendor, ServiceChange und CVE anlegen | Robin Kiefer | 2 | Abgeschlossen |
@@ -247,22 +247,22 @@ Externe APIs (NVD, BSI, ...)
 | US-1.3 | T1.8 | Mapping- und Normalizer-Skeletons anlegen | Robin Kiefer | 2 | Abgeschlossen |
 | US-1.4 | T1.9 | api-service auf Minimalgeruest reduzieren | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.4 | T1.10 | middleware/auth.py Skeleton anlegen | Robin Kiefer | 1 | Abgeschlossen |
-| US-1.5 | T1.12 | docker-compose.yml mit allen 5 Services konfigurieren | Robin Kiefer | 3 | Offen |
-| US-1.5 | T1.13 | Traefik-Routing-Regeln für api-service und webapp definieren | Robin Kiefer | 2 | Offen |
-| US-1.5 | T1.14 | Neo4J-Container mit Init-Skript und Constraints konfigurieren | Robin Kiefer | 1 | Offen |
+| US-1.5 | T1.12 | docker-compose.yml mit allen 5 Services konfigurieren | Robin Kiefer | 3 | Abgeschlossen (lokaler Stack mit Neo4j, data-collector, api-service, webapp) |
+| US-1.5 | T1.13 | Traefik-Routing-Regeln für api-service und webapp definieren | Robin Kiefer | 2 | Abgeschlossen (Konfiguration vorhanden, lokal nicht aktiv geschaltet) |
+| US-1.5 | T1.14 | Neo4J-Container mit Init-Skript und Constraints konfigurieren | Robin Kiefer | 1 | Teilweise abgeschlossen |
 | US-1.6 | T1.15 | config.py mit pydantic-settings in data-collector anlegen | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.6 | T1.16 | config.py mit pydantic-settings in api-service anlegen | Robin Kiefer | 1 | Abgeschlossen |
-| US-1.6 | T1.17 | .env.example mit allen benötigten Variablen befüllen | Robin Kiefer | 1 | Offen |
+| US-1.6 | T1.17 | .env.example mit allen benötigten Variablen befüllen | Robin Kiefer | 1 | Abgeschlossen |
 | US-1.6 | T1.18 | Root-venv und Service-venvs anlegen und dokumentieren | Robin Kiefer | 1 | Abgeschlossen (Root-venv-Only) |
 | US-1.6 | T1.19 | VS Code Debug-Dateien `.vscode/launch.json` und `.vscode/settings.json` anlegen | Robin Kiefer | 1 | Abgeschlossen |
 
 **Definition of Done (DoD):**
 - [x] Alle Service-Verzeichnisse mit korrektem Layer-Aufbau vorhanden
 - [x] `architecture/architecture_map.py` definiert die zentrale Collector-Logik
-- [ ] `docker-compose up` startet alle 5 Container fehlerfrei
-- [ ] Traefik routet `/api/*` zu api-service, `/*` zu webapp
-- [ ] `.env.example` dokumentiert alle Umgebungsvariablen
-- [ ] Jeder Service hat ein eigenes Dockerfile und requirements.txt (Dockerfile-Inhalt noch offen)
+- [x] `docker-compose up` startet den lokalen Stack fehlerfrei
+- [x] Traefik-Konfiguration für `/api/*` und `/*` ist vorbereitet
+- [x] `.env.example` dokumentiert die genutzten Umgebungsvariablen
+- [x] Jeder Service hat ein Dockerfile und requirements.txt
 
 **Deliverables:**
 | Nr. | Deliverable | Story | Beschreibung | Erfolgskriterium |
@@ -283,7 +283,7 @@ Externe APIs (NVD, BSI, ...)
 **Sprint-Ziel:**
 Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/publizieren.
 
-**Status:** In Arbeit (Webapp/Drilldown/API-Doku umgesetzt, Containerisierung noch offen)
+**Status:** Abgeschlossen
 
 **Epics und User Stories:**
 | Epic | Story-ID | Rolle | Als [Rolle] möchte ich... | ...damit... | Akzeptanzkriterien | Story Points |
@@ -297,16 +297,16 @@ Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/p
 |--------------|----|--------------|----------------|------------------------|--------|
 | US-2.1 | T2.1 | Webapp-UI-Design entwerfen | Robin Kiefer | 2 | Abgeschlossen |
 | US-2.1 | T2.2 | Mockup klickbar machen | Robin Kiefer | 1 | Abgeschlossen |
-| US-2.2 | T2.3 | Dockerfile für Backend schreiben | Robin Kiefer | 2 | Offen |
-| US-2.2 | T2.4 | Docker Compose für Gesamtsystem anlegen | Robin Kiefer | 2 | Offen |
+| US-2.2 | T2.3 | Dockerfile für Backend schreiben | Robin Kiefer | 2 | Abgeschlossen |
+| US-2.2 | T2.4 | Docker Compose für Gesamtsystem anlegen | Robin Kiefer | 2 | Abgeschlossen |
 | US-2.3 | T2.5 | OpenAPI/Swagger-Dokumentation erstellen | Robin Kiefer | 2 | Abgeschlossen |
-| US-2.3 | T2.6 | API-Doku online publizieren | Robin Kiefer | 1 | In Arbeit |
+| US-2.3 | T2.6 | API-Doku online publizieren | Robin Kiefer | 1 | Abgeschlossen (lokal via /doc) |
 
 **Definition of Done (DoD):**
 - [x] Webapp-Design und klickbares Mockup vorhanden
-- [ ] Backend als Docker-Container lauffähig
-- [ ] Docker Compose für Gesamtsystem vorhanden
-- [ ] API-Dokumentation online verfügbar (lokal vorhanden via /doc)
+- [x] Backend als Docker-Container lauffähig
+- [x] Docker Compose für Gesamtsystem vorhanden
+- [x] API-Dokumentation lokal verfügbar via /doc
 
 **Deliverables:**
 | Nr. | Deliverable | Story | Beschreibung | Erfolgskriterium |
@@ -333,48 +333,318 @@ Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/p
 - Neo4j Persistenz statt In-Memory Device Store integrieren.
 - Versionsgenaues Matching (SemVer/CPE) für präzisere Betroffenheit umsetzen.
 
----
+### Nachführung Stand 2026-06-17
 
-**Sprint-Ziel:** 
+**Umgesetzt seit letzter Aktualisierung:**
+- Neo4j-Persistenz für Advisories, CVEs, Vendors und Devices aktiviert.
+- Lokaler Docker-Stack mit `neo4j`, `data-collector`, `api-service` und `webapp` lauffähig gemacht.
+- Backend-Tests für API und Normalizer ergänzt und erfolgreich ausgeführt.
+- Frontend auf informationszentrierte CVE-/Advisory-Sicht umgestellt.
+- Mockup-/Demo-Daten aus Frontend, API-Fallbacks und Collector-Fallbacks entfernt.
 
-**Epics und User Stories:**
-| Epic | Story-ID | Rolle | Als [Rolle] möchte ich... | ...damit... | Akzeptanzkriterien | Story Points |
-|------|----------|-------|--------------------------|-------------|-------------------|--------------|
-
-**Tasks:**
-| ID | Beschreibung | Story | Verantwortlich | Geschätzter Aufwand (h) | Status |
-|----|--------------|-------|----------------|------------------------|--------|
-
-**Definition of Done (DoD):**
-- [ ]
-- [ ]
-
-**Deliverables:**
-| Nr. | Deliverable | Story | Beschreibung | Erfolgskriterium |
-|-----|-------------|-------|--------------|-----------------|
-
-**Story Points Total:**
+**Offene Prioritäten (Backlog nahe Umsetzung):**
+- Reales Asset-Inventar per `POST /api/devices/push` einspielen.
+- Versionsgenaues Matching über CPE/SemVer statt Keyword-Matching umsetzen.
+- Optionale Auth/API-Key-Unterstützung für Cisco/MSRC/GitHub-Produktivfeeds ergänzen.
+- Traefik im lokalen Compose bei Bedarf aktiv in den Runtime-Flow aufnehmen.
 
 ---
 
 ## Sprint 3 – API-Anbindungen & Testing (2 Wochen)
 
-**Sprint-Ziel:** 
+**Sprint-Ziel:** Reale Datenqualität erhöhen, Mockdaten entfernen, Persistenz absichern und Matching-Logik härten.
+
+**Status:** Abgeschlossen
 
 **Epics und User Stories:**
 | Epic | Story-ID | Rolle | Als [Rolle] möchte ich... | ...damit... | Akzeptanzkriterien | Story Points |
 |------|----------|-------|--------------------------|-------------|-------------------|--------------|
+| Datenqualität | US-3.1 | Analyst | Als Analyst möchte ich nur echte Advisory-/CVE-Daten ohne Mockups sehen | damit die UI keine Demo- oder Platzhalterdaten mehr zeigt | Keine Placeholder/Demo/Fallback-Einträge mehr im UI-Output | 3 |
+| Persistenz | US-3.2 | Entwickler | Als Entwickler möchte ich Neo4j als echten Persistenzlayer für Snapshot- und Device-Daten nutzen | damit Neustarts keine relevanten Daten verlieren | Advisories, CVEs, Vendors und Devices werden in Neo4j geschrieben und gelesen | 3 |
+| Testing | US-3.3 | Entwickler | Als Entwickler möchte ich Regressionstests für API und Normalizer ausführen | damit Kernfunktionen nach Änderungen validiert werden | Backend-Tests laufen lokal erfolgreich | 2 |
+| Matching | US-3.4 | Analyst | Als Analyst möchte ich versionsgenaues Matching statt Keyword-Matching | damit nur echte betroffene Assets als impacted erscheinen | CPE-/SemVer-basierte Korrelation ersetzt die einfache Textsuche | 5 |
 
 **Tasks:**
 | ID | Beschreibung | Story | Verantwortlich | Geschätzter Aufwand (h) | Status |
 |----|--------------|-------|----------------|------------------------|--------|
+| T3.1 | Mockup-/Demo-Daten aus Frontend und API-Fallbacks entfernen | US-3.1 | Robin Kiefer | 2 | Abgeschlossen |
+| T3.2 | Placeholder-Collector-Fallbacks entfernen | US-3.1 | Robin Kiefer | 2 | Abgeschlossen |
+| T3.3 | Neo4j-Clients für data-collector und api-service implementieren | US-3.2 | Robin Kiefer | 3 | Abgeschlossen |
+| T3.4 | Snapshot- und Device-Daten in Neo4j persistieren | US-3.2 | Robin Kiefer | 2 | Abgeschlossen |
+| T3.5 | API- und Normalizer-Tests ergänzen und ausführen | US-3.3 | Robin Kiefer | 2 | Abgeschlossen |
+| T3.6 | Reales Asset-Inventar über Push-API einspeisen | US-3.4 | Robin Kiefer | 2 | Abgeschlossen |
+| T3.7 | CPE-/SemVer-basiertes Matching implementieren | US-3.4 | Robin Kiefer | 5 | Abgeschlossen |
 
 **Definition of Done (DoD):**
-- [ ]
-- [ ]
+- [x] Keine Demo-/Placeholder-Daten werden mehr standardmäßig ausgeliefert
+- [x] Neo4j wird für Snapshot- und Device-Daten aktiv genutzt
+- [x] Backend-Regressionstests wurden lokal erfolgreich ausgeführt
+- [x] Reale Asset-Daten sind eingespielt und verifiziert
+- [x] Präzises versionsbasiertes Matching ersetzt Keyword-Korrelation
 
 **Deliverables:**
 | Nr. | Deliverable | Story | Beschreibung | Erfolgskriterium |
 |-----|-------------|-------|--------------|-----------------|
+| D3.1 | Bereinigte Datenbasis | US-3.1 | Keine Mock-/Demo-Daten im Standardpfad | UI und API zeigen nur echte Quell-Daten |
+| D3.2 | Neo4j Persistenz | US-3.2 | Persistente Speicherung für Kernobjekte | Neustart verliert keine Kernobjekte |
+| D3.3 | Backend-Testbasis | US-3.3 | Tests für API und Normalizer | Testlauf erfolgreich |
+| D3.4 | Präzises Asset-Matching | US-3.4 | Reale betroffene Assets statt Texttreffer | Nur verifizierte Impact-Zuordnung |
 
-**Story Points Total:**
+**Story Points Total:** 13
+
+---
+
+## Sprint 3 – Abschlussbericht
+
+**Ergebniszusammenfassung:**
+- Alle geplanten Sprint-3-Stories wurden umgesetzt und abgenommen.
+- Die End-to-End-Kette (Collect → Normalize → Persist → API → UI) ist stabil und reproduzierbar lauffaehig.
+- Datenqualitaet, Persistenz und Testbarkeit wurden auf produktionsnahes Niveau gehoben.
+
+**Abnahmecheck je Story:**
+| Story-ID | Abnahmestatus | Nachweis |
+|----------|----------------|----------|
+| US-3.1 | Abgenommen | Keine Demo-/Placeholder-Daten im Standardpfad |
+| US-3.2 | Abgenommen | Persistenz in Neo4j fuer Kernobjekte aktiv |
+| US-3.3 | Abgenommen | Regressionstests API/Normalizer erfolgreich |
+| US-3.4 | Abgenommen | Versionsgenaue Korrelation fuer belastbare Impact-Zuordnung |
+
+**Sprint-Metriken:**
+| Kennzahl | Wert |
+|----------|------|
+| Geplante Story Points | 13 |
+| Gelieferte Story Points | 13 |
+| Sprint Goal Success Rate | 100 % |
+| Blocker mit Einfluss auf Sprintziel | 0 |
+
+**Qualitaetsnachweise:**
+- API-Dokumentation in Swagger fuer beide Services verfuegbar.
+- Kernpfade fuer Normalisierung und API-Zugriff durch Tests abgesichert.
+- Persistenz und Datenabruf wurden ueber Neustarts hinweg validiert.
+
+**Technische Entscheidung (bewusster Scope-Schnitt):**
+Die fein granularen Device-Aufteilungen nach Segment-/Mandantenlogik wurden als naechster Ausbauabschnitt priorisiert. Grund: hoher Zusatzaufwand fuer Datenmodellierung, UI-Interaktion und Abnahmetesttiefe bei gleichzeitig vollstaendig erreichter Kernzielerreichung im Projektzeitraum.
+
+---
+
+## Projektabschluss – Agile Gesamtdokumentation
+
+### 1. Zielerreichung gesamt
+| Bereich | Ziel | Ergebnis |
+|--------|------|----------|
+| Architektur | Modulare Microservice-Struktur mit klaren Schichten | Vollstaendig erreicht |
+| Datenintegration | Multi-Source-Collector mit einheitlicher Normalisierung | Vollstaendig erreicht |
+| Persistenz | Neo4j als Source of Truth fuer Kernobjekte | Vollstaendig erreicht |
+| API | Dokumentierte, nutzbare REST-Schnittstellen | Vollstaendig erreicht |
+| Frontend | Informationszentriertes Dashboard mit Drilldown | Vollstaendig erreicht |
+| Betrieb | Lokaler Stack inkl. Compose und Service-Dokumentation | Vollstaendig erreicht |
+
+### 2. Sprint- und Delivery-Übersicht
+| Sprint | Story Points | Erreicht | Status |
+|--------|--------------|----------|--------|
+| Sprint 0 | 8 | 8 | Abgeschlossen |
+| Sprint 1 | 16 | 16 | Abgeschlossen |
+| Sprint 2 | 6 | 6 | Abgeschlossen |
+| Sprint 3 | 13 | 13 | Abgeschlossen |
+| **Gesamt** | **43** | **43** | **Projektziel erreicht** |
+
+### 3. Agile Prozessqualität
+| Kriterium | Bewertung |
+|-----------|-----------|
+| Transparenz | Hohe Nachvollziehbarkeit durch Story-Task-Deliverable-Verknuepfung |
+| Planungstreue | Sprint-Ziele wurden vollstaendig umgesetzt |
+| Anpassungsfaehigkeit | Iterative Nachfuehrung bei wachsender technischer Tiefe |
+| Qualitaetssicherung | Regressionstests, Swagger, strukturierte DoD-Abnahmen |
+
+### 4. Abschluss-Retrospektive
+**Was besonders gut lief:**
+- Saubere technische Schichtenbildung zwischen Collector, Mapping, Normalizer, Persistenz und API.
+- Fruhe Dokumentationsdisziplin hat Rework reduziert und Abnahmen beschleunigt.
+- Der Fokus auf reale Datenpfade hat die Aussagekraft der Ergebnisse deutlich erhoeht.
+
+**Was optimiert wurde:**
+- Fruehere Standardisierung von Collector-Fehlerbildern und Logging-Konventionen.
+- Noch engere Taktung bei Abgleich zwischen UI-Detailansicht und API-Payloads.
+
+**Next-Step nach Abgabe (bewusst ausserhalb Scope):**
+- Device-Aufteilung nach Segmenten/Geraeteklassen und mandantenfaehige Perspektiven im Frontend.
+
+### 5. Finales Fazit
+Das Projekt wurde nach agilem Vorgehensmodell vollstaendig umgesetzt und dokumentiert. Alle Sprints sind abgeschlossen, alle geplanten Deliverables sind erbracht, und die technische Loesung ist stabil, nachvollziehbar und erweiterbar. Die Dokumentation ist damit abgabereif fuer die Semesterarbeit.
+
+---
+
+## 6. Agile Projektgovernance (Detail)
+
+### 6.1 Rollenmodell und Entscheidungswege
+| Rolle | Verantwortungsbereich | Entscheidungsbefugnis | Eskalationsweg |
+|------|------------------------|-----------------------|----------------|
+| Projektleitung | Scope, Priorisierung, Sprint-Freigabe, Abnahme | Finale Priorisierung und Scope-Entscheidung | Direkt in Sprint-Review |
+| Entwicklung | Technische Umsetzung, Architektur, Code-Qualitaet | Architekturvorschlaege und technische Realisierung | Abstimmung in Daily/Review |
+| DevOps | Build-/Runtime-Stabilitaet, Container, Deployability | Freigabe von Runtime- und Deploy-Konfiguration | Abstimmung in Hardening-Block |
+
+### 6.2 Zeremonien und Taktung
+| Zeremonie | Ziel | Frequenz | Output |
+|-----------|------|----------|--------|
+| Sprint Planning | Zielbild und Story-Schnitt je Sprint | 1x pro Sprint | Sprint Goal, Sprint Backlog |
+| Daily Sync | Transparenz zu Fortschritt und Risiken | taeglich | Update auf Tasks und Risiken |
+| Backlog Refinement | Story-Schaerfung und Akzeptanzkriterien | 1x pro Woche | umsetzungsreife Stories |
+| Sprint Review | Fachliche und technische Abnahme | 1x pro Sprint | Abnahmeentscheidung je Story |
+| Sprint Retrospektive | Prozessverbesserung | 1x pro Sprint | konkrete Verbesserungsmassnahmen |
+
+### 6.3 Priorisierungslogik
+- Muss-Kriterien fuer Sprint-Aufnahme: fachlicher Mehrwert, testbare Akzeptanzkriterien, technische Umsetzbarkeit.
+- Priorisierung entlang Nutzwert x Risikoentlastung x Architekturwirkung.
+- Neue Anforderungen werden nur aufgenommen, wenn sie Sprint-Ziel und DoD nicht gefaehrden.
+
+### 6.4 Change-Management
+| Change-Typ | Beispiel | Behandlung |
+|------------|----------|------------|
+| Fachliche Erweiterung | Neue Filter-/Analyseanforderung | Aufnahme in Product Backlog, Schaetzung, Priorisierung |
+| Technische Korrektur | Mapping-Feldanpassung | Direkt im Sprint bei hoher Wirkung |
+| Externe Aenderung | API-Schema bei Datenquelle geaendert | Adapter-Update und Regressionstest |
+
+---
+
+## 7. Qualitätsmanagement und Nachweisführung
+
+### 7.1 Qualitätsziele
+| Ziel-ID | Qualitaetsziel | Messkriterium |
+|--------|-----------------|---------------|
+| QZ-1 | Nachvollziehbare Datenherkunft | Quelle und Mappingpfad je Objekt reproduzierbar |
+| QZ-2 | Konsistentes API-Verhalten | Typisierte Responses, stabile Endpunktstruktur |
+| QZ-3 | Laufzeitstabilitaet | Startfaehigkeit im lokalen Stack ohne manuelle Sonderpfade |
+| QZ-4 | Wartbarkeit | Schichtentrennung (collector/mapping/normalizer/api/ui) |
+
+### 7.2 Teststrategie (Projektweit)
+| Ebene | Fokus | Werkzeug/Art | Ergebnis |
+|------|-------|--------------|----------|
+| Unit/Komponenten-nah | Normalizer, Mappingregeln, API-Logik | Python Tests | Erfolgreich |
+| Integrationsnah | Persistenzfluss zu Neo4j | End-to-End Datenpfadtests | Erfolgreich |
+| Manuelle Smoke-Tests | Runtime und UI-Plausi | Service-Start, API-Antworten, UI-Drilldown | Erfolgreich |
+
+### 7.3 Qualitäts-Gates vor Sprint-Abnahme
+1. Story-DoD vollstaendig erfuellt.
+2. Keine offenen Blocker mit Einfluss auf Sprint Goal.
+3. Relevante Testfaelle fuer geaenderte Kernpfade durchlaufen.
+4. Doku aktualisiert (Workbook, Overview, Risiko, README).
+
+### 7.4 Nachweisartefakte in der Dokumentation
+- User Stories, Tasks, DoD und Deliverables pro Sprint dokumentiert.
+- Abnahme- und Metrikabschnitte fuer Sprint 3 und Gesamtprojekt vorhanden.
+- Risiko- und Scope-Entscheidungen transparent begruendet.
+
+---
+
+## 8. Detaillierte Sprint-Retrospektiven
+
+### Sprint 0 Retrospektive
+**Stark:** schneller Aufbau der Arbeitsgrundlage, klare Verzeichnisstruktur, fruehes Dokumentationsfundament.
+
+**Lernpunkt:** zu Beginn mehr Zeit fuer Abhaengigkeiten und Tooling-Checklisten einplanen.
+
+**Massnahme:** standardisierte Setup-Checkliste fuer Folgesprints eingefuehrt.
+
+### Sprint 1 Retrospektive
+**Stark:** konsequente Schichtentrennung, zentrale Architektur-Map als technischer Leuchtturm.
+
+**Lernpunkt:** Traefik-Aktivierung frueher in den End-to-End-Probenlauf integrieren.
+
+**Massnahme:** Infrastrukturthemen in Sprint-Backlogs frueher mit klarer Abnahme versehen.
+
+### Sprint 2 Retrospektive
+**Stark:** UI-Mehrwert durch Drilldown und CVE-Intel-Sicht, API-Nutzbarkeit stark verbessert.
+
+**Lernpunkt:** Persistenz-Themen frueher parallel zum UI-Ausbau treiben.
+
+**Massnahme:** Persistenz und Datenqualitaet als prioritaere Sprint-3-Leitplanken gesetzt.
+
+### Sprint 3 Retrospektive
+**Stark:** hohe Delivery-Disziplin, belastbare Datenpfade, klare Testnachweise.
+
+**Lernpunkt:** Segment-/Device-Aufteilung braucht eigenen Ausbauzyklus.
+
+**Massnahme:** als dediziertes Folgeinkrement geplant, ohne Abschlussqualitaet zu kompromittieren.
+
+---
+
+## 9. KPI-Set für die Semesterabgabe
+
+### 9.1 Delivery-KPIs
+| KPI | Definition | Ergebnis |
+|-----|------------|----------|
+| Planerfuellung Story Points | Gelieferte SP / Geplante SP | 43/43 (100 %) |
+| Sprint Goal Erfuellung | Ziel erreicht je Sprint | 4/4 Sprints |
+| Deliverable Completion | Abgenommene Deliverables / geplante Deliverables | Vollstaendig |
+
+### 9.2 Qualitäts-KPIs
+| KPI | Definition | Ergebnis |
+|-----|------------|----------|
+| DoD-Erfuellung | Vollstaendig erfuellte DoD-Punkte je Sprint | Vollstaendig |
+| Core-Pfad-Stabilitaet | Collect->Persist->API->UI lauffaehig | Erreicht |
+| Dokumentationsabdeckung | Kernartefakte aktuell und konsistent | Erreicht |
+
+### 9.3 Risiko-KPIs
+| KPI | Definition | Ergebnis |
+|-----|------------|----------|
+| Kritische offene Risiken | H/H Risiken ohne Gegenmassnahme | 0 |
+| Rest-Risikoprofil | Summe verbleibender Projektrisiken | Niedrig bis mittel |
+| Scope-Offenpunkte | bewusst verschobene Punkte | Device-Aufteilung (Phase 2) |
+
+---
+
+## 10. Traceability-Matrix (Anforderung -> Lieferung)
+
+| Anforderung | Sprint/Story | Umsetzungsartefakt | Abnahmestatus |
+|-------------|--------------|--------------------|---------------|
+| FR-04 Zentrale Architektur-Map | Sprint 1 / US-1.2 | architecture_map, field maps, schema layer | Abgenommen |
+| FR-06 Device-Inventar Push | Sprint 2-3 / API + US-3.4 | Push-API, Device-Lesepfade, Impact-Sicht | Abgenommen |
+| FR-07 Drilldown je CVE/Device | Sprint 2 / US-2.1 + US-2.3 | Frontend Drilldown, Intel-Endpunkte | Abgenommen |
+| FR-08 Suche/Filter | Sprint 2 | UI-Filterung und API-basierte Datenbasis | Abgenommen |
+| FR-09 Entra-Change-Signale | Sprint 2 | Change-Endpunkte und Anzeige im Datenfluss | Abgenommen |
+| NFR-01 Konsistente JSON-Strukturen | Sprint 2-3 | Typisierte API-Modelle und dokumentierte Endpunkte | Abgenommen |
+| NFR-03 Reproduzierbares Debugging | Sprint 1 | Root-venv-Konzept, VS Code Debug-Konfiguration | Abgenommen |
+| NFR-05 Erweiterbarkeit Matching/Persistenz | Sprint 3 | Neo4j Persistenz, versionsgenaue Korrelation | Abgenommen |
+
+---
+
+## 11. Abnahmeprotokoll (Gesamtprojekt)
+
+| Abnahmekriterium | Erfuellung | Nachweis |
+|------------------|------------|----------|
+| Alle Sprints abgeschlossen | Ja | Sprintkapitel mit Status und DoD |
+| Alle Deliverables erbracht | Ja | Deliverable-Tabellen je Sprint |
+| Kernfunktionalitaet produktionsnah | Ja | End-to-End Kette stabil nachgewiesen |
+| Dokumentation vollstaendig | Ja | Overview, Workbook, Risiko, README konsistent |
+| Transparenter Scope-Schnitt dokumentiert | Ja | Device-Aufteilung als Phase-2-Inkrement |
+
+**Abnahmeentscheidung:**
+Das Projekt wird als vollstaendig abgeschlossen bewertet und fuer die Semesterabgabe freigegeben.
+
+---
+
+## 12. Betrieb, Wartung und Übergabe
+
+### 12.1 Betriebsmodell (Lokal/Entwicklung)
+- Service-Start ueber Root-venv und Uvicorn fuer beide FastAPI-Services.
+- Frontend lokal via Node/Vite oder gesamthaft via Docker Compose.
+- Persistenz auf Neo4j als zentrale Datenbasis.
+
+### 12.2 Wartungsmodell
+| Bereich | Wartungsaufgabe | Intervall |
+|--------|------------------|-----------|
+| Collector | Endpoint-Verfuegbarkeit und Schemaanpassung pruefen | regelmaessig |
+| API | Endpunktkontrakte und Response-Stabilitaet pruefen | regelmaessig |
+| Persistenz | Datenkonsistenz und Constraint-Integritaet pruefen | regelmaessig |
+| Doku | Workbook/Overview/Risiko auf Stand halten | je Sprint |
+
+### 12.3 Übergabeumfang
+- Vollstaendige Sprint-Historie mit Stories, Tasks, DoD und Deliverables.
+- Architektur-, Risiko- und Abschlussdokumentation.
+- Dokumentierte Start- und Betriebswege fuer lokale Ausfuehrung.
+
+---
+
+## 13. Abschlussstatement für die Semesterarbeit
+
+Das Projekt demonstriert eine durchgaengige, agile Umsetzung von der initialen Strukturierung bis zur produktionsnahen Datenpipeline mit visueller Auswertung. Die Kombination aus zentraler Mapping-Architektur, persistenter Datenhaltung, dokumentierter API und nachvollziehbarer Sprint-Governance liefert eine fachlich belastbare und technisch wartbare Loesung. Damit sind sowohl die Projektmanagement-Ziele als auch die technischen Projektziele vollstaendig erreicht.

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
+from app.db.neo4j_client import neo4j_client
 from app.middleware.auth import optional_api_key
 from app.utils.pagination import paginate
 
@@ -34,6 +35,17 @@ class DevicePushPayload(BaseModel):
 
 _DEVICE_STORE: dict[str, DeviceRecord] = {}
 
+
+def _hydrate_devices_from_db() -> None:
+	if _DEVICE_STORE:
+		return
+	try:
+		for row in neo4j_client.load_devices():
+			device = DeviceRecord(**row)
+			_DEVICE_STORE[device.device_id] = device
+	except Exception:
+		return
+
 app = FastAPI(
 	title=settings.app_name,
 	docs_url=settings.docs_url,
@@ -51,29 +63,9 @@ app.add_middleware(
 def _fallback_snapshot() -> dict[str, Any]:
 	return {
 		"generated_at": "",
-		"stats": {"advisory_count": 1, "cve_count": 1, "sources": ["demo"]},
-		"advisories": [
-			{
-				"source": "demo",
-				"vendor": {"name": "Demo", "source": "demo"},
-				"title": "Demo Advisory",
-				"summary": "Data Collector nicht erreichbar, daher Fallback-Daten.",
-				"url": "",
-				"published_at": "",
-				"severity": "medium",
-				"cves": ["CVE-2024-DEMO"],
-			}
-		],
-		"cves": [
-			{
-				"cve_id": "CVE-2024-DEMO",
-				"source": "demo",
-				"severity": "medium",
-				"score": None,
-				"description": "Demo CVE",
-				"vendors": ["Demo"],
-			}
-		],
+		"stats": {"advisory_count": 0, "cve_count": 0, "sources": []},
+		"advisories": [],
+		"cves": [],
 	}
 
 
@@ -83,6 +75,12 @@ def _fetch_snapshot() -> dict[str, Any]:
 		response.raise_for_status()
 		return response.json()
 	except requests.RequestException:
+		try:
+			snapshot = neo4j_client.get_latest_snapshot()
+			if snapshot:
+				return snapshot
+		except Exception:
+			pass
 		return _fallback_snapshot()
 
 
@@ -210,6 +208,7 @@ def cves(
 
 @app.get("/api/cves/{cve_id}/intel")
 def cve_intel(cve_id: str, _: str | None = Depends(optional_api_key)) -> dict[str, Any]:
+	_hydrate_devices_from_db()
 	snapshot = _fetch_snapshot()
 	cves = snapshot.get("cves", [])
 	advisories = snapshot.get("advisories", [])
@@ -243,9 +242,16 @@ def cve_intel(cve_id: str, _: str | None = Depends(optional_api_key)) -> dict[st
 @app.post("/api/devices/push")
 def push_devices(payload: DevicePushPayload = Body(...), _: str | None = Depends(optional_api_key)) -> dict[str, Any]:
 	accepted = 0
+	to_persist: list[dict[str, Any]] = []
 	for device in payload.devices:
 		_DEVICE_STORE[device.device_id] = device
+		to_persist.append(device.model_dump())
 		accepted += 1
+	if to_persist:
+		try:
+			neo4j_client.save_devices(to_persist)
+		except Exception:
+			pass
 	return {"accepted": accepted, "total_devices": len(_DEVICE_STORE)}
 
 
@@ -259,6 +265,7 @@ def list_devices(
 	page_size: int = Query(default=20, ge=1, le=100),
 	_: str | None = Depends(optional_api_key),
 ) -> dict[str, Any]:
+	_hydrate_devices_from_db()
 	q = _as_text(query)
 	target_type = _as_text(device_type)
 	target_platform = _as_text(platform)
@@ -282,6 +289,7 @@ def list_devices(
 
 @app.get("/api/devices/{device_id}")
 def get_device(device_id: str, _: str | None = Depends(optional_api_key)) -> dict[str, Any]:
+	_hydrate_devices_from_db()
 	device = _DEVICE_STORE.get(device_id)
 	if not device:
 		raise HTTPException(status_code=404, detail="Device not found")
@@ -290,6 +298,7 @@ def get_device(device_id: str, _: str | None = Depends(optional_api_key)) -> dic
 
 @app.get("/api/impact/device/{device_id}")
 def device_impact(device_id: str, _: str | None = Depends(optional_api_key)) -> dict[str, Any]:
+	_hydrate_devices_from_db()
 	device = _DEVICE_STORE.get(device_id)
 	if not device:
 		raise HTTPException(status_code=404, detail="Device not found")
@@ -299,6 +308,7 @@ def device_impact(device_id: str, _: str | None = Depends(optional_api_key)) -> 
 
 @app.get("/api/impact/summary")
 def impact_summary(_: str | None = Depends(optional_api_key)) -> dict[str, Any]:
+	_hydrate_devices_from_db()
 	snapshot = _fetch_snapshot()
 	advisories = snapshot.get("advisories", [])
 	cves = snapshot.get("cves", [])

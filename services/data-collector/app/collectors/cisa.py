@@ -10,25 +10,14 @@ class CISACollector(BaseCollector):
     source = "cisa"
     _endpoint = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 
-    def collect(self, limit: int = 10) -> list[dict[str, Any]]:
+    def collect(self, limit: int = 100) -> list[dict[str, Any]]:
         payload = get_json(self._endpoint)
         vulnerabilities = []
         if isinstance(payload, dict):
             vulnerabilities = payload.get("vulnerabilities", [])
 
         if not vulnerabilities:
-            return [
-                {
-                    "source": self.source,
-                    "vendor": "CISA",
-                    "title": "CISA KEV Placeholder",
-                    "summary": "Known Exploited Vulnerabilities Feed aktuell nicht erreichbar.",
-                    "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
-                    "published": "",
-                    "severity": "critical",
-                    "cves": [],
-                }
-            ][:limit]
+            return []
 
         records: list[dict[str, Any]] = []
         for item in vulnerabilities[:limit]:

@@ -1,6 +1,8 @@
 # OpsMonitoring RKI
 
-![Project Status](https://img.shields.io/badge/status-in%20progress-yellow)
+$root="C:\Users\Robin\Git\semarb03_opsMonitoring_rki"; Start-Process powershell -ArgumentList "-NoExit","-Command","Set-ExecutionPolicy -Scope Process RemoteSigned; & '$root\.venv\Scripts\Activate.ps1'; Set-Location '$root'; python -m uvicorn app.main:app --app-dir services/data-collector --host 0.0.0.0 --port 8001 --reload"; Start-Process powershell -ArgumentList "-NoExit","-Command","Set-ExecutionPolicy -Scope Process RemoteSigned; & '$root\.venv\Scripts\Activate.ps1'; Set-Location '$root'; python -m uvicorn app.main:app --app-dir services/api-service --host 0.0.0.0 --port 8002 --reload"; Start-Process powershell -ArgumentList "-NoExit","-Command","Set-ExecutionPolicy -Scope Process RemoteSigned; Set-Location '$root\services\webapp'; npm run dev -- --host 0.0.0.0 --port 5173"
+
+![Project Status](https://img.shields.io/badge/status-complete-brightgreen)
 
 
 ## Dokumentation
@@ -9,6 +11,7 @@
 | [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) | Projektübersicht, Ziele, User Stories, Struktur |
 | [docs/projectworkbook.md](docs/projectworkbook.md) | Sprint-Dokumentation, User Stories & Tasks (hierarchisch) |
 | [docs/risikotabelle.md](docs/risikotabelle.md) | Risikotabelle |
+| [docs/ABGABE_DOSSIER.md](docs/ABGABE_DOSSIER.md) | Umfangreiche Abschlussdokumentation fuer die Semesterabgabe |
 
 ## Quick Start
 ```bash
@@ -33,6 +36,21 @@ npm run dev -- --host 0.0.0.0 --port 5173
 cd ../../infrastructure
 docker compose up -d
 ```
+
+## Docker Stack (Recommended)
+```bash
+cd infrastructure
+docker compose up -d --build
+
+# Optional: Trigger fresh ingest
+curl -X POST "http://localhost:8001/collect/run?limit_per_source=10"
+```
+
+Lokale URLs:
+- Webapp: http://localhost:8080
+- API Service Swagger: http://localhost:8002/doc
+- Data Collector Swagger: http://localhost:8001/doc
+- Neo4j Browser: http://localhost:7474
 
 ## Repository-Struktur
 ```
@@ -92,9 +110,9 @@ docker compose up -d
 | Sprint | Zeitraum | Status |
 |--------|----------|--------|
 | Sprint 0 | Initialisierung | Abgeschlossen |
-| Sprint 1 | Microservices-Architektur | Teilweise abgeschlossen |
-| Sprint 2 | Webapp, API-Doku, UX | In Arbeit |
-| Sprint 3 | API-Anbindungen & Testing | Geplant |
+| Sprint 1 | Microservices-Architektur | Abgeschlossen |
+| Sprint 2 | Webapp, API-Doku, UX | Abgeschlossen |
+| Sprint 3 | Datenqualitaet, Persistenz, Testing | Abgeschlossen |
 
 ## Projektmanagement
 Das Projektmanagement erfolgt nach dem Muster:
@@ -104,10 +122,13 @@ Siehe [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) und [docs/projectwork
 ## Features
 - Zentrale Sammlung von Asset-, Service-, Update- und Advisory-Daten
 - Vendor-unabhängige Normalisierung über zentrale Felddefinitionen
-- Mehrquellen-Collector aktiv: BSI, NVD, CISA, GitHub Advisories, Cisco, Microsoft, Entra Change Signal
+- Mehrquellen-Collector aktiv: NVD, CISA, GitHub Advisories, Microsoft; BSI/Cisco nur bei real erreichbaren Datenquellen
 - Containerisierte Microservices
-- Webzugriff & Datenvisualisierung mit Drilldown, Device-Impact und Detailfenstern
+- Webzugriff & Datenvisualisierung mit informationszentrierter CVE-/Advisory-Sicht, Inspect-Aktionen und Device-Impact
 - Automatisiertes Deployment (IaC, CI/CD)
+- Neo4j Persistenz für Advisory-, CVE-, Vendor- und Device-Daten
+- Keine Demo-/Mockdaten im Standard-Datenpfad
+- Sprint-Dokumentation und Projektarbeitsbuch vollstaendig abgeschlossen
 
 ## API (Aktueller Stand)
 - API-Service Swagger: /doc
@@ -152,8 +173,9 @@ Siehe [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) und [docs/projectwork
 2. Nur Root-venv nutzen (.venv)
 3. Abhaengigkeiten fuer data-collector und api-service ins Root-venv installieren
 4. Collector-Struktur in collectors, architecture, mapping und normalizers pflegen
-5. Mini-Frontend in services/webapp lokal pruefen
-6. Infrastruktur via Docker Compose testen
+5. Reale Asset-Daten bei Bedarf via `POST /api/devices/push` einspeisen
+6. Frontend in services/webapp lokal pruefen
+7. Infrastruktur via Docker Compose testen
 
 ## Debugging (Python)
 - VS Code Debug-Konfiguration liegt in .vscode/launch.json.

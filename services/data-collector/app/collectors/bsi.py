@@ -42,25 +42,14 @@ class BSICollector(BaseCollector):
 
 		return records
 
-	def collect(self, limit: int = 10) -> list[dict[str, Any]]:
+	def collect(self, limit: int = 100) -> list[dict[str, Any]]:
 		entries = []
 		if feedparser is not None:
 			feed = feedparser.parse(self._rss_url)
 			entries = feed.entries[:limit] if hasattr(feed, "entries") else []
 
 		if not entries:
-			return self._fallback_parse_rss(limit) or [
-				{
-					"source": self.source,
-					"vendor": "BSI",
-					"title": "BSI Feed derzeit nicht erreichbar",
-					"summary": "Fallback-Eintrag fuer lokale Entwicklung.",
-					"url": "https://www.bsi.bund.de",
-					"published": "",
-					"severity": "medium",
-					"cves": [],
-				}
-			]
+			return self._fallback_parse_rss(limit)
 
 		normalized: list[dict[str, Any]] = []
 		for entry in entries:

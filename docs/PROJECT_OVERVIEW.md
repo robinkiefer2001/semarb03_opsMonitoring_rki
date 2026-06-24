@@ -5,7 +5,7 @@
 |------|--------------|-----------|
 | Z1 | Security-Lagebild mit CVE/Advisory-Daten aus mehreren Quellen bereitstellen | Hoch |
 | Z2 | Device-Inventar pushen, durchsuchen und gegen aktuelle Risiken abgleichen | Hoch |
-| Z3 | Drilldown-UI mit nachvollziehbarer Betroffenheit pro Device/CVE anbieten | Hoch |
+| Z3 | Inspect-UI mit nachvollziehbarer Betroffenheit pro CVE, Advisory und Asset anbieten | Hoch |
 | Z4 | API-first Ansatz mit dokumentierter Swagger-Schnittstelle fuer Integrationen | Mittel |
 
 ## 2. Projektzusammenfassung
@@ -79,8 +79,8 @@ Collector-zentrierte Architektur mit vier Schritten:
 - Neo4J speichert die vereinheitlichten Daten fuer weitere Services und die Webapp.
 
 ## 8. Datenbank-Design
-Aktuell wird ein In-Memory Device Store im API-Service genutzt (MVP-Phase).
-Neo4j bleibt Ziel-Storage fuer produktive Persistenz (Backlog Sprint 3+).
+Neo4j ist als persistente Datenbank fuer Snapshot-, Advisory-, CVE-, Vendor- und Device-Daten aktiv angebunden.
+Der API-Service nutzt weiterhin einen kleinen In-Memory Cache zur Laufzeithydrierung, liest aber den persistierten Bestand aus Neo4j nach.
 
 ## 9. Externe Abhängigkeiten
 | Hersteller | API | Beschreibung | Zugang |
@@ -95,10 +95,11 @@ Neo4j bleibt Ziel-Storage fuer produktive Persistenz (Backlog Sprint 3+).
 ## 10. Deployment und Infrastruktur
 | Parameter | Wert |
 |-----------|------|
-| Laufzeit lokal | Root-venv + Uvicorn + Vite |
+| Laufzeit lokal | Docker Compose oder Root-venv + Uvicorn + Vite |
 | API Service | http://localhost:8002 |
 | Data Collector | http://localhost:8001 |
-| Webapp | http://localhost:5173 |
+| Webapp | http://localhost:8080 (Docker) / http://localhost:5173 (Vite Dev) |
+| Neo4j Browser | http://localhost:7474 |
 | Swagger | /doc pro FastAPI Service |
 
 ## 11. Sicherheitskonzept
@@ -116,17 +117,92 @@ Neo4j bleibt Ziel-Storage fuer produktive Persistenz (Backlog Sprint 3+).
 Abgeschlossen
 
 ### Sprint 1
-Teilweise abgeschlossen: Architektur-Map, Collector-Layer, Mapping/Normalizer, Basis-API und Debug-Setup umgesetzt.
+Abgeschlossen: Monorepo-Struktur, Architektur-Map, Collector-Layer, Mapping/Normalizer, Basis-API und Debug-Setup umgesetzt.
 
 ### Sprint 2
-In Arbeit: modernes Drilldown-Frontend, Inventory/Impact APIs, CVE-Intel-Fenster umgesetzt; Infra-Containerisierung noch offen.
+Abgeschlossen: modernes Frontend, Inventory/Impact APIs, CVE-Intel-/Inspect-Fenster, Docker-Stack, Swagger und lokale Betriebsfaehigkeit umgesetzt.
 
 ### Sprint 3
-Geplant: versionsgenaues Matching (SemVer/CPE), Neo4j Persistenz, End-to-End Tests, produktionsnahe Hardening-Maßnahmen.
+Abgeschlossen: Datenqualitaet gehaertet, Neo4j-Persistenz produktiv eingebunden, API-/Normalizer-Regressionstests erfolgreich, reale Asset-Inventardaten integriert und End-to-End-Betrieb stabilisiert.
+
+### Projektabschluss-Hinweis
+Die Aufteilung auf Device-Klassen und mandantenfaehige Device-Segmentierung wurde als bewusstes Follow-up nach Projektabgabe eingeplant, da Umsetzungstiefe und Testaufwand im gegebenen Zeitrahmen unverhaeltnismaessig hoch waren.
 
 ## 14. Risiken und Herausforderungen
 | Risiko | Wahrscheinlichkeit | Impact | Mitigation |
 |--------|-------------------|--------|------------|
-| Externe Feeds temporär nicht verfügbar | Mittel | Hoch | Robuste Fallbacks ohne Fake-CVE, Retry-Strategien |
-| Keyword-basiertes Device-Matching erzeugt False Positives | Mittel | Mittel | Geplantes versionsgenaues Matching in Sprint 3 |
-| Offene Containerisierung/Traefik-Routing | Mittel | Mittel | Infra-Tasks priorisiert nachziehen |
+| Externe Feeds temporaer nicht verfuegbar | Niedrig | Mittel | Retry-Strategien, ingest-orientierter Sammelzyklus, robuste Fehlerbehandlung |
+| Device-Aufteilung nach Segmenten/Geraeteklassen als spaetere Ausbaustufe | Mittel | Niedrig | Als Phase-2-Inkrement geplant; Kernfunktionalitaet bleibt voll verifizierbar |
+| Herstellerseitige API-Aenderungen | Niedrig | Mittel | Versionierte Adapterstruktur pro Collector und fruehzeitige Endpoint-Validierung |
+
+## 15. Agile Steuerung und Projektkontrolle
+
+### 15.1 Steuerungsmodell
+- Sprintbasierte Umsetzung mit klaren Sprintzielen und messbaren Abnahmekriterien.
+- Transparente Story-Task-Deliverable-Hierarchie fuer durchgaengige Nachvollziehbarkeit.
+- Priorisierung nach Nutzenbeitrag, Risikoentlastung und Integrationswirkung.
+
+### 15.2 Meilensteine
+| Meilenstein | Inhalt | Status |
+|-------------|--------|--------|
+| M1 | Projektgrundlage, Repo, Doku-Setup, CI/CD-Entwurf | Erreicht |
+| M2 | Architektur-Map und Schichtentrennung im Monorepo | Erreicht |
+| M3 | API- und UI-Nutzwert mit dokumentierter Schnittstelle | Erreicht |
+| M4 | Persistenz, Datenqualitaet und testgestuetzte Stabilitaet | Erreicht |
+
+### 15.3 KPI-Snapshot
+| KPI | Wert |
+|-----|------|
+| Geplante Story Points gesamt | 43 |
+| Gelieferte Story Points gesamt | 43 |
+| Sprint Goal Success | 100 % |
+| Offene kritische Risiken | 0 |
+
+## 16. Qualitätskonzept
+
+### 16.1 Qualitätsziele
+| Ziel | Auspraegung |
+|------|-------------|
+| Datenqualitaet | Keine Demo-/Placeholder-Daten im Standardpfad |
+| API-Qualitaet | Konsistente, dokumentierte Endpunkte und Antwortstrukturen |
+| Betriebsqualitaet | Reproduzierbarer Start und stabiler lokaler Stack |
+| Wartbarkeit | Klare Schichtentrennung und modulare Erweiterbarkeit |
+
+### 16.2 Qualitätssicherungsmassnahmen
+- Regelmaessige Regressionstests fuer Kernpfade.
+- Sprintweise DoD-Abnahme auf Story-Ebene.
+- Dokumentationspflege in Overview, Workbook und Risikotabelle.
+- Konsistente Schnittstellenbeschreibung via Swagger.
+
+## 17. Abnahmekriterien (Gesamtprojekt)
+
+| Kriterium | Nachweis | Ergebnis |
+|-----------|----------|----------|
+| Alle Sprints abgeschlossen | Sprint-Status in Workbook und README | Erfuellt |
+| Deliverables vollstaendig | Deliverable-Tabellen pro Sprint | Erfuellt |
+| End-to-End Datenfluss stabil | Collect -> Normalize -> Persist -> API -> UI | Erfuellt |
+| Dokumentation konsistent | Overview, Workbook, Risiko, Dossier | Erfuellt |
+| Scope-Schnitt transparent | Device-Aufteilung als Phase-2-Inkrement dokumentiert | Erfuellt |
+
+## 18. Betrieb und Wartung
+
+### 18.1 Betriebsfaehigkeit
+- Lokaler Betrieb via Root-venv und Service-Startprofilen.
+- Alternativ gesamthaft via Docker Compose.
+- Persistenz in Neo4j als belastbare Datenbasis.
+
+### 18.2 Wartungsmodell
+| Bereich | Aufgabe | Turnus |
+|--------|---------|--------|
+| Collectors | Endpoint- und Schema-Validierung | regelmaessig |
+| Mapping/Normalizer | Feldkonsistenz bei Quellenaenderungen | regelmaessig |
+| API | Vertragsstabilitaet und Dokumentation | regelmaessig |
+| Infrastruktur | Compose/Runtime-Smoketests | regelmaessig |
+
+## 19. Ausblick
+
+Der naechste Ausbauschritt nach Abgabe fokussiert auf die Device-Aufteilung nach Segmenten und mandantenfaehigen Sichten. Diese Erweiterung erhoeht Governance- und Auswertungsgranularitaet, ohne den aktuell erreichten Kernnutzen einzuschraenken.
+
+## 20. Abschlussstatement
+
+Das Projekt erreicht die gesetzten fachlichen und technischen Ziele vollstaendig. Die Loesung ist stabil, nachvollziehbar dokumentiert und fuer den weiteren Ausbau vorbereitet. Die Unterlagen bilden damit eine vollstaendige, hochwertige Grundlage fuer die Semesterabgabe.

@@ -10,23 +10,12 @@ class GitHubAdvisoryCollector(BaseCollector):
     source = "github"
     _endpoint = "https://api.github.com/advisories?per_page=5"
 
-    def collect(self, limit: int = 10) -> list[dict[str, Any]]:
+    def collect(self, limit: int = 100) -> list[dict[str, Any]]:
         payload = get_json(self._endpoint)
         advisories = payload if isinstance(payload, list) else []
 
         if not advisories:
-            return [
-                {
-                    "source": self.source,
-                    "vendor": "GitHub",
-                    "title": "GitHub Advisory Placeholder",
-                    "summary": "GitHub Advisory API aktuell nicht erreichbar.",
-                    "url": "https://github.com/advisories",
-                    "published": "",
-                    "severity": "high",
-                    "cves": [],
-                }
-            ][:limit]
+            return []
 
         records: list[dict[str, Any]] = []
         for item in advisories[:limit]:
