@@ -318,7 +318,7 @@ Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/p
 
 **Story Points Total:** 6
 
-### Nachführung Stand 2026-06-07
+### Nachführung Stand 1
 
 **Umgesetzt seit letzter Aktualisierung:**
 - Data-Collector vollständig als Pipeline (collect → map → normalize) implementiert.
@@ -333,7 +333,7 @@ Webapp entwerfen, Backend containerisieren und API-Schnittstelle dokumentieren/p
 - Neo4j Persistenz statt In-Memory Device Store integrieren.
 - Versionsgenaues Matching (SemVer/CPE) für präzisere Betroffenheit umsetzen.
 
-### Nachführung Stand 2026-06-17
+### Nachführung Stand 2
 
 **Umgesetzt seit letzter Aktualisierung:**
 - Neo4j-Persistenz für Advisories, CVEs, Vendors und Devices aktiviert.
