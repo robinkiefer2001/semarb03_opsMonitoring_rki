@@ -1,6 +1,5 @@
 # OpsMonitoring RKI
 
-$root="C:\Users\Robin\Git\semarb03_opsMonitoring_rki"; Start-Process powershell -ArgumentList "-NoExit","-Command","Set-ExecutionPolicy -Scope Process RemoteSigned; & '$root\.venv\Scripts\Activate.ps1'; Set-Location '$root'; python -m uvicorn app.main:app --app-dir services/data-collector --host 0.0.0.0 --port 8001 --reload"; Start-Process powershell -ArgumentList "-NoExit","-Command","Set-ExecutionPolicy -Scope Process RemoteSigned; & '$root\.venv\Scripts\Activate.ps1'; Set-Location '$root'; python -m uvicorn app.main:app --app-dir services/api-service --host 0.0.0.0 --port 8002 --reload"; Start-Process powershell -ArgumentList "-NoExit","-Command","Set-ExecutionPolicy -Scope Process RemoteSigned; Set-Location '$root\services\webapp'; npm run dev -- --host 0.0.0.0 --port 5173"
 
 ![Project Status](https://img.shields.io/badge/status-complete-brightgreen)
 
